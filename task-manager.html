@@ -1,0 +1,1850 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ざっくりTASK</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Josefin+Sans:wght@300;400;600&family=Nunito:ital,wght@0,400;0,600;0,700;1,400&family=M+PLUS+Rounded+1c:wght@800&display=swap" rel="stylesheet">
+<style>
+/* ── CSS Variables ───────────────────────────────────────────── */
+:root {
+  --bg:            #EDE9E2;
+  --bg2:           #E4DFD7;
+  --surface:       #F7F4EF;
+  --surface2:      #EFEBE4;
+  --border:        #D4CEC5;
+  --border-focus:  #8BA5A0;
+  --text:          #2E2B27;
+  --text-muted:    #8A8279;
+  --text-light:    #B3ADA5;
+  --primary:       #5E8A84;
+  --primary-hover: #4D7872;
+  --primary-light: #D6E8E6;
+  --large-color:   #B5654A;
+  --large-bg:      #F0DDD7;
+  --large-text:    #7A3E2A;
+  --medium-color:  #B08A4E;
+  --medium-bg:     #EEE2C8;
+  --medium-text:   #7A5C28;
+  --small-color:   #6B9470;
+  --small-bg:      #D8EAD9;
+  --small-text:    #3D6442;
+  --danger:        #A85247;
+  --danger-bg:     #F0DEDD;
+  --radius:        10px;
+  --radius-sm:     6px;
+  --shadow:        0 1px 4px rgba(46,43,39,0.08), 0 4px 16px rgba(46,43,39,0.06);
+  --shadow-sm:     0 1px 3px rgba(46,43,39,0.08);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Nunito', 'Hiragino Sans', 'Meiryo', sans-serif;
+  font-size: 16px;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Header ──────────────────────────────────────────────────── */
+header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-sm);
+}
+
+header h1 {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  line-height: 1;
+}
+
+.title-ja {
+  font-family: 'M PLUS Rounded 1c', 'Hiragino Sans', sans-serif;
+  font-weight: 800;
+  font-size: 1.18rem;
+  color: var(--text);
+  letter-spacing: 0.04em;
+}
+
+.title-en {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 700;
+  font-size: 1.32rem;
+  color: var(--primary);
+  letter-spacing: 0.08em;
+}
+
+.header-actions { display: flex; gap: 6px; }
+
+/* ── Buttons ─────────────────────────────────────────────────── */
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 11px 20px;
+  min-height: 44px;
+  font-size: 1rem;
+  font-family: 'Josefin Sans', 'Nunito', sans-serif;
+  letter-spacing: 0.06em;
+  transition: background 0.18s, color 0.18s, border-color 0.18s;
+}
+
+.btn-icon {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 0;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  min-width: 40px;
+  min-height: 40px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn-icon:hover { background: var(--bg2); color: var(--text); border-color: var(--border-focus); }
+
+.btn-primary {
+  background: var(--primary);
+  color: #F7F4EF;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+}
+.btn-primary:hover { background: var(--primary-hover); }
+
+.btn-secondary {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 8px 16px;
+  min-height: 38px;
+  font-size: 0.9rem;
+}
+.btn-secondary:hover { background: var(--bg2); color: var(--text); }
+
+.btn-danger {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--danger);
+  padding: 9px 18px;
+  font-size: 0.9rem;
+}
+.btn-danger:hover { background: var(--danger-bg); border-color: var(--danger); }
+
+.btn-cal-toggle {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 6px 14px;
+  min-height: 34px;
+  font-size: 0.85rem;
+  font-family: 'Josefin Sans', sans-serif;
+  letter-spacing: 0.08em;
+}
+.btn-cal-toggle.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+.btn-cal-toggle:hover:not(.active) { background: var(--bg2); }
+
+/* ── Layout ──────────────────────────────────────────────────── */
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px 16px;
+}
+
+/* Desktop two-column layout */
+.desktop-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.desktop-left {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.desktop-right {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+@media (max-width: 767px) {
+  .desktop-layout {
+    grid-template-columns: 1fr;
+  }
+  .desktop-right {
+    order: -1;
+  }
+}
+
+.top-area {
+  margin-bottom: 16px;
+}
+
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+
+.card-title {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  margin-bottom: 18px;
+}
+
+/* ── Form ────────────────────────────────────────────────────── */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 500px) {
+  .form-grid { grid-template-columns: 1fr; }
+}
+
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-group.full { grid-column: 1 / -1; }
+
+label {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+input, select, textarea {
+  padding: 11px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  font-family: 'Nunito', 'Hiragino Sans', sans-serif;
+  background: var(--bg2);
+  color: var(--text);
+  transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  background: var(--surface);
+  box-shadow: 0 0 0 3px rgba(94,138,132,0.12);
+}
+
+textarea { resize: vertical; min-height: 56px; }
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+/* ── Custom date picker button ───────────────────────────────── */
+#deadlineDisplayBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  font-family: 'Nunito', 'Hiragino Sans', sans-serif;
+  background: var(--bg2);
+  color: var(--text);
+  min-height: 44px;
+  text-align: left;
+  justify-content: flex-start;
+  width: 100%;
+  transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
+  cursor: pointer;
+}
+#deadlineDisplayBtn:hover {
+  border-color: var(--border-focus);
+  background: var(--surface);
+}
+#deadlineDisplayBtn .dp-icon { font-size: 1rem; flex-shrink: 0; }
+#deadlineDisplayBtn .dp-text { flex: 1; }
+#deadlineDisplayBtn.has-value .dp-text { color: var(--text); }
+#deadlineDisplayBtn:not(.has-value) .dp-text { color: var(--text-light); }
+
+/* Hidden native date input */
+#inputDeadline { display: none; }
+
+/* ── Date picker overlay ─────────────────────────────────────── */
+#datePickerOverlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(46,43,39,0.35);
+  z-index: 300;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  backdrop-filter: blur(2px);
+}
+#datePickerOverlay.active { display: flex; }
+
+.dp-modal {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 20px;
+  width: min(340px, 100%);
+  box-shadow: 0 12px 40px rgba(46,43,39,0.18);
+  border: 1px solid var(--border);
+}
+
+.dp-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.dp-nav-title {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--text);
+}
+
+.dp-nav-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 5px 12px;
+  min-height: 34px;
+  font-size: 1rem;
+  border-radius: var(--radius-sm);
+}
+.dp-nav-btn:hover { background: var(--bg2); }
+
+.dp-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+
+.dp-day-header {
+  font-family: 'Josefin Sans', sans-serif;
+  text-align: center;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text-light);
+  letter-spacing: 0.1em;
+  padding: 4px 0 6px;
+}
+
+.dp-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.88rem;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 0.14s, border-color 0.14s;
+  min-height: 36px;
+  padding: 0;
+}
+.dp-day:hover { background: var(--bg2); border-color: var(--border); }
+.dp-day.today { border-color: var(--primary); color: var(--primary); font-weight: 700; }
+.dp-day.selected { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 700; }
+.dp-day.other-month { color: var(--text-light); }
+.dp-day.empty { cursor: default; pointer-events: none; }
+
+.dp-footer {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  align-items: center;
+}
+
+.dp-today-btn {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  padding: 8px 14px;
+  min-height: 36px;
+  background: var(--primary-light);
+  border: 1px solid var(--border-focus);
+  color: var(--primary-hover);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.dp-today-btn:hover { background: #C4DEDD; }
+
+.dp-manual-btn {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 8px 14px;
+  min-height: 36px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.dp-manual-btn:hover { background: var(--bg2); }
+
+#dpManualInputWrapper {
+  display: none;
+  margin-top: 10px;
+}
+#dpManualInputWrapper.active { display: block; }
+#dpManualNative {
+  display: block;
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg2);
+  color: var(--text);
+  margin-bottom: 8px;
+}
+#dpManualNative:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  background: var(--surface);
+  box-shadow: 0 0 0 3px rgba(94,138,132,0.12);
+}
+#dpManualConfirm {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 0.85rem;
+  padding: 8px 16px;
+  min-height: 36px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: 600;
+}
+#dpManualConfirm:hover { background: var(--primary-hover); }
+
+/* ── Calendar ────────────────────────────────────────────────── */
+.calendar-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  gap: 8px;
+}
+
+.calendar-nav-center {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  justify-content: center;
+}
+
+.calendar-nav h2 {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.cal-toggle-group {
+  display: flex;
+  gap: 4px;
+  margin-left: 8px;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+
+.cal-header {
+  font-family: 'Josefin Sans', sans-serif;
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-light);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 4px 0 7px;
+}
+
+/* Month view day cells */
+.cal-day {
+  min-height: 78px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 5px;
+  background: var(--surface2);
+  transition: border-color 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+
+.cal-day.today {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+
+.cal-day.other-month {
+  opacity: 0.45;
+}
+
+.cal-date {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--text-light);
+  margin-bottom: 4px;
+  display: block;
+  line-height: 1.3;
+}
+
+.cal-day.today .cal-date {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* Month view: work period bar (bottom of cell) */
+.cal-work-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  border-radius: 0;
+}
+.cal-work-bar.large  { background: var(--large-color); opacity: 0.35; }
+.cal-work-bar.medium { background: var(--medium-color); opacity: 0.35; }
+.cal-work-bar.small  { background: var(--small-color); opacity: 0.35; }
+
+/* Month view: deadline tag */
+.cal-deadline-tag {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  margin-bottom: 2px;
+  cursor: pointer;
+  line-height: 1.5;
+}
+.cal-deadline-tag.large  { background: var(--large-color);  color: #fff; }
+.cal-deadline-tag.medium { background: var(--medium-color); color: #fff; }
+.cal-deadline-tag.small  { background: var(--small-color);  color: #fff; }
+
+/* Week view blocks */
+.task-block {
+  font-family: 'Nunito', 'Hiragino Sans', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 3px 6px;
+  border-radius: 4px;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  line-height: 1.6;
+  transition: filter 0.15s;
+  letter-spacing: 0.01em;
+}
+.task-block:hover { filter: brightness(0.94); }
+
+.task-block.large  { background: var(--large-bg);  border-left: 3px solid var(--large-color);  color: var(--large-text); }
+.task-block.medium { background: var(--medium-bg); border-left: 3px solid var(--medium-color); color: var(--medium-text); }
+.task-block.small  { background: var(--small-bg);  border-left: 3px solid var(--small-color);  color: var(--small-text); }
+
+.task-block.large.dl  { background: var(--large-color);  color: #fff; border-left: none; font-weight: 700; }
+.task-block.medium.dl { background: var(--medium-color); color: #fff; border-left: none; font-weight: 700; }
+.task-block.small.dl  { background: var(--small-color);  color: #fff; border-left: none; font-weight: 700; }
+
+/* ── Task list ───────────────────────────────────────────────── */
+.task-list { display: flex; flex-direction: column; gap: 8px; }
+
+.task-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface2);
+  transition: border-color 0.18s, background 0.18s;
+}
+
+.task-item:hover { border-color: var(--border-focus); background: var(--surface); }
+
+.task-weight-badge {
+  width: 3px;
+  flex-shrink: 0;
+  align-self: stretch;
+  border-radius: 2px;
+}
+.task-weight-badge.large  { background: var(--large-color); }
+.task-weight-badge.medium { background: var(--medium-color); }
+.task-weight-badge.small  { background: var(--small-color); }
+
+.task-info { flex: 1; min-width: 0; }
+
+.task-title {
+  font-family: 'Nunito', 'Hiragino Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.01em;
+}
+
+.task-meta {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  margin-top: 5px;
+  letter-spacing: 0.06em;
+}
+
+.task-memo {
+  font-family: 'Nunito', 'Hiragino Sans', sans-serif;
+  font-size: 0.88rem;
+  color: var(--text-light);
+  margin-top: 5px;
+  font-style: italic;
+  white-space: pre-wrap;
+}
+
+.task-detail-btn {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 6px 12px;
+  min-height: 32px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  flex-shrink: 0;
+  align-self: flex-start;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.task-detail-btn:hover { background: var(--bg2); border-color: var(--border-focus); color: var(--text); }
+
+/* ── Chips ───────────────────────────────────────────────────── */
+.chip {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.chip.large  { background: var(--large-bg);  color: var(--large-text); }
+.chip.medium { background: var(--medium-bg); color: var(--medium-text); }
+.chip.small  { background: var(--small-bg);  color: var(--small-text); }
+
+/* ── Modals / overlays ───────────────────────────────────────── */
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(46,43,39,0.4);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  backdrop-filter: blur(2px);
+}
+.overlay.active { display: flex; }
+
+.modal {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 24px;
+  width: min(420px, 100%);
+  box-shadow: 0 12px 40px rgba(46,43,39,0.18);
+  border: 1px solid var(--border);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-title {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: var(--text-light);
+  cursor: pointer;
+  padding: 2px 6px;
+  min-height: auto;
+  line-height: 1;
+  font-family: sans-serif;
+}
+.modal-close:hover { color: var(--text); }
+
+/* ── Notification banners ────────────────────────────────────── */
+.notif-banner {
+  font-family: 'Nunito', 'Hiragino Sans', sans-serif;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  border-left: 3px solid;
+  line-height: 1.7;
+}
+.notif-start  { background: var(--primary-light); border-color: var(--primary);      color: #2E5450; }
+.notif-warn   { background: var(--medium-bg);     border-color: var(--medium-color); color: var(--medium-text); }
+.notif-urgent { background: var(--danger-bg);     border-color: var(--danger);       color: var(--danger); }
+
+/* ── Notification permission btn ─────────────────────────────── */
+.notif-request-btn {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  padding: 8px 14px;
+  min-height: 36px;
+  background: var(--primary-light);
+  border: 1px solid var(--border-focus);
+  color: var(--primary-hover);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.notif-request-btn:hover { background: #C4DEDD; }
+
+/* ── Misc ────────────────────────────────────────────────────── */
+.empty {
+  font-family: 'Josefin Sans', sans-serif;
+  text-align: center;
+  color: var(--text-light);
+  padding: 32px;
+  font-size: 0.9rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.detail-table { width: 100%; border-collapse: collapse; font-size: 0.96rem; }
+.detail-table td { padding: 8px 0; vertical-align: top; border-bottom: 1px solid var(--border); }
+.detail-table tr:last-child td { border-bottom: none; }
+.detail-table td:first-child {
+  font-family: 'Josefin Sans', sans-serif;
+  color: var(--text-light);
+  width: 96px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding-right: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ── URL info card ───────────────────────────────────────────── */
+.url-info-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: var(--shadow-sm);
+}
+.url-info-icon { font-size: 1.4rem; flex-shrink: 0; }
+.url-info-text { flex: 1; min-width: 0; }
+.url-info-text strong {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--text);
+  display: block;
+  margin-bottom: 2px;
+}
+.url-info-text span { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
+.url-copy-btn {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  padding: 9px 16px;
+  min-height: 38px;
+  background: var(--primary);
+  color: #F7F4EF;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.18s;
+  flex-shrink: 0;
+}
+.url-copy-btn:hover { background: var(--primary-hover); }
+.url-copy-btn.copied { background: var(--small-color); }
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .cal-day { min-height: 60px; }
+  .task-block { font-size: 0.62rem; }
+  .card { padding: 14px; }
+  .url-info-card { flex-wrap: wrap; }
+  .url-copy-btn { width: 100%; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1 id="appTitle">
+    <span class="title-ja">ざっくり</span><span class="title-en">TASK</span>
+  </h1>
+  <div class="header-actions">
+    <button class="btn-icon" id="copyUrlBtn" title="URLをコピー">🔗</button>
+    <button class="btn-icon" id="langBtn">EN</button>
+    <button class="btn-icon" id="settingsBtn">⚙️</button>
+  </div>
+</header>
+
+<main>
+  <div class="top-area">
+    <div id="notifArea"></div>
+    <div id="urlInfoCard" class="url-info-card" style="display:none"></div>
+  </div>
+
+  <div class="desktop-layout">
+    <!-- Left column: form + calendar -->
+    <div class="desktop-left">
+
+      <!-- Add task form -->
+      <div class="card">
+        <div class="card-title" id="formTitle">タスクを追加</div>
+        <div class="form-grid">
+          <div class="form-group full">
+            <label id="lblTitle">タイトル <span style="color:var(--danger)">*</span></label>
+            <input type="text" id="inputTitle" autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label id="lblDeadline">締め切り日 <span style="color:var(--danger)">*</span></label>
+            <button type="button" id="deadlineDisplayBtn">
+              <span class="dp-icon">📅</span>
+              <span class="dp-text" id="deadlineBtnText"></span>
+            </button>
+            <input type="date" id="inputDeadline">
+          </div>
+          <div class="form-group">
+            <label id="lblWeight">重さ</label>
+            <select id="inputWeight">
+              <option value="large" id="optLarge">大（7日）</option>
+              <option value="medium" id="optMedium" selected>中（3日）</option>
+              <option value="small" id="optSmall">小（1日）</option>
+            </select>
+          </div>
+          <div class="form-group full">
+            <label id="lblMemo">メモ（任意）</label>
+            <textarea id="inputMemo" rows="2"></textarea>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn-primary" id="addBtn">＋ 追加</button>
+        </div>
+      </div>
+
+      <!-- Calendar -->
+      <div class="card">
+        <div class="calendar-nav">
+          <button class="btn-secondary" id="prevPeriod" style="padding:6px 14px;min-height:36px;font-size:1.1rem;">‹</button>
+          <div class="calendar-nav-center">
+            <h2 id="calPeriodLabel"></h2>
+            <div class="cal-toggle-group">
+              <button class="btn-cal-toggle active" id="btnCalMonth" data-mode="month">月</button>
+              <button class="btn-cal-toggle" id="btnCalWeek" data-mode="week">週</button>
+            </div>
+          </div>
+          <button class="btn-secondary" id="nextPeriod" style="padding:6px 14px;min-height:36px;font-size:1.1rem;">›</button>
+        </div>
+        <div class="calendar-grid" id="calendarGrid"></div>
+      </div>
+
+    </div><!-- end desktop-left -->
+
+    <!-- Right column: task list -->
+    <div class="desktop-right">
+      <div class="card">
+        <div class="card-title" id="listTitle">タスク一覧</div>
+        <div class="task-list" id="taskList"></div>
+      </div>
+    </div><!-- end desktop-right -->
+
+  </div><!-- end desktop-layout -->
+</main>
+
+<!-- Date picker overlay -->
+<div class="overlay" id="datePickerOverlay">
+  <div class="dp-modal">
+    <div class="dp-nav">
+      <button class="dp-nav-btn" id="dpPrev">‹</button>
+      <span class="dp-nav-title" id="dpMonthLabel"></span>
+      <button class="dp-nav-btn" id="dpNext">›</button>
+    </div>
+    <div class="dp-grid" id="dpGrid"></div>
+    <div class="dp-footer">
+      <button class="dp-today-btn" id="dpTodayBtn">今日</button>
+      <button class="dp-manual-btn" id="dpManualBtn">⌨ 手動入力</button>
+    </div>
+    <div id="dpManualInputWrapper">
+      <input type="date" id="dpManualNative">
+      <button id="dpManualConfirm">確定</button>
+    </div>
+  </div>
+</div>
+
+<!-- Settings modal -->
+<div class="overlay" id="settingsOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="settingsTitle">設定</span>
+      <button class="modal-close" id="closeSettings">✕</button>
+    </div>
+    <div class="form-group" style="margin-bottom:12px">
+      <label id="lblDayLarge">大タスクの作業日数</label>
+      <input type="number" id="settingLarge" min="1" max="365">
+    </div>
+    <div class="form-group" style="margin-bottom:12px">
+      <label id="lblDayMedium">中タスクの作業日数</label>
+      <input type="number" id="settingMedium" min="1" max="365">
+    </div>
+    <div class="form-group" style="margin-bottom:16px">
+      <label id="lblDaySmall">小タスクの作業日数</label>
+      <input type="number" id="settingSmall" min="1" max="365">
+    </div>
+    <div style="margin-bottom:16px">
+      <label style="font-size:0.8rem;font-weight:600;color:var(--text-muted);font-family:'Josefin Sans',sans-serif;letter-spacing:0.14em;text-transform:uppercase" id="lblNotifPerm">ブラウザ通知</label>
+      <div style="margin-top:6px;display:flex;align-items:center;gap:10px">
+        <button class="notif-request-btn" id="notifPermBtn">通知を許可する</button>
+        <span id="notifStatus" style="font-size:0.78rem;color:var(--text-muted)"></span>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-primary" id="saveSettings">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- Task detail modal -->
+<div class="overlay" id="taskDetailOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="detailTitle"></span>
+      <button class="modal-close" id="closeDetail">✕</button>
+    </div>
+    <div id="detailBody"></div>
+    <div class="form-actions" style="margin-top:16px">
+      <button class="btn-danger" id="deleteTaskBtn">🗑 削除</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────────────
+let lang = localStorage.getItem('lang') || 'ja';
+let settings = JSON.parse(localStorage.getItem('taskSettings') || '{"large":7,"medium":3,"small":1}');
+let tasks = [];
+let calendarMode = 'month'; // 'month' or 'week'
+let currentMonthDate = new Date();
+let currentWeekStart = getMonday(new Date());
+let selectedTaskId = null;
+
+// Date picker state
+let dpMonth = new Date();
+
+// ── URL encode / decode ────────────────────────────────────────
+function encodeTasks(arr) {
+  try { return btoa(encodeURIComponent(JSON.stringify(arr))); } catch(e) { return ''; }
+}
+
+function decodeTasks(str) {
+  try { const arr = JSON.parse(decodeURIComponent(atob(str))); return Array.isArray(arr) ? arr : null; } catch(e) { return null; }
+}
+
+function updateURLHash() {
+  const encoded = encodeTasks(tasks);
+  history.replaceState(null, '', encoded ? '#' + encoded : location.pathname + location.search);
+}
+
+function loadInitialTasks() {
+  const hash = location.hash.slice(1);
+  if (hash) { const d = decodeTasks(hash); if (d) { tasks = d; localStorage.setItem('tasks', JSON.stringify(tasks)); return; } }
+  tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+  updateURLHash();
+}
+
+// ── i18n ───────────────────────────────────────────────────────
+const T = {
+  ja: {
+    formTitle: 'タスクを追加',
+    lblTitle: 'タイトル',
+    lblDeadline: '締め切り日',
+    lblWeight: '重さ',
+    lblMemo: 'メモ（任意）',
+    addBtn: '＋ 追加',
+    listTitle: 'タスク一覧',
+    settingsTitle: '設定',
+    lblDayLarge: '大タスクの作業日数',
+    lblDayMedium: '中タスクの作業日数',
+    lblDaySmall: '小タスクの作業日数',
+    lblNotifPerm: 'ブラウザ通知',
+    notifPermBtn: '通知を許可する',
+    saveSettings: '保存',
+    large: '大', medium: '中', small: '小',
+    optLarge: d => `大（${d}日）`,
+    optMedium: d => `中（${d}日）`,
+    optSmall: d => `小（${d}日）`,
+    days: ['月', '火', '水', '木', '金', '土', '日'],
+    deleteTaskBtn: '🗑 削除',
+    deadlineLabel: '締め切り',
+    startLabel: '作業開始',
+    workDaysLabel: '作業日数',
+    memoLabel: 'メモ',
+    weightLabel: '重さ',
+    emptyList: 'タスクがありません',
+    notifStart: n => `【${n}】 予定が近づいてきました。そろそろ準備を始めましょう。`,
+    notifWarn:  n => `【${n}】 順調に進んでいますか？まだなら相当マズいですよ。`,
+    notifUrgent: n => `【${n}】 今日がゴールです。あと一息！まさか、まだ始めていないなんてことありませんよね？`,
+    notifGranted: '✓ 許可済み',
+    notifDenied: '✗ ブロック中',
+    notifDefault: '未設定',
+    titleRequired: 'タイトルを入力してください',
+    deadlineRequired: '締め切り日を選択してください',
+    langBtn: 'EN',
+    urlInfoTitle: 'あなた専用のページ',
+    urlInfoDesc: 'タスクを追加するとURLが自動更新されます。このURLをブックマークすれば、スマホ・PCどこからでも同じタスクを確認できます。',
+    copyUrlBtn: 'URLをコピー',
+    copiedFeedback: 'コピーしました ✓',
+    detailBtnLabel: '詳細',
+    calWeek: '週',
+    calMonth: '月',
+    dpTodayBtn: '今日',
+    dpManualBtn: '⌨ 手動入力',
+    dpConfirmBtn: '確定',
+    deadlinePlaceholder: '日付を選択',
+  },
+  en: {
+    formTitle: 'Add Task',
+    lblTitle: 'Title',
+    lblDeadline: 'Deadline',
+    lblWeight: 'Weight',
+    lblMemo: 'Memo (optional)',
+    addBtn: '＋ Add',
+    listTitle: 'Task List',
+    settingsTitle: 'Settings',
+    lblDayLarge: 'Large task work days',
+    lblDayMedium: 'Medium task work days',
+    lblDaySmall: 'Small task work days',
+    lblNotifPerm: 'Browser Notifications',
+    notifPermBtn: 'Allow notifications',
+    saveSettings: 'Save',
+    large: 'Large', medium: 'Medium', small: 'Small',
+    optLarge: d => `Large (${d}d)`,
+    optMedium: d => `Medium (${d}d)`,
+    optSmall: d => `Small (${d}d)`,
+    days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    deleteTaskBtn: '🗑 Delete',
+    deadlineLabel: 'Deadline',
+    startLabel: 'Start',
+    workDaysLabel: 'Work days',
+    memoLabel: 'Memo',
+    weightLabel: 'Weight',
+    emptyList: 'No tasks yet',
+    notifStart: n => `[${n}] Work period approaching. Time to start preparing!`,
+    notifWarn:  n => `[${n}] Making progress? If not, you're in serious trouble!`,
+    notifUrgent: n => `[${n}] Today is the deadline! One last push! You haven't started yet, have you...?`,
+    notifGranted: '✓ Allowed',
+    notifDenied: '✗ Blocked',
+    notifDefault: 'Not set',
+    titleRequired: 'Please enter a title',
+    deadlineRequired: 'Please select a deadline',
+    langBtn: 'JP',
+    urlInfoTitle: 'Your personal page',
+    urlInfoDesc: 'The URL updates automatically when you add tasks. Bookmark it to access your tasks from any device.',
+    copyUrlBtn: 'Copy URL',
+    copiedFeedback: 'Copied ✓',
+    detailBtnLabel: 'Details',
+    calWeek: 'Week',
+    calMonth: 'Month',
+    dpTodayBtn: 'Today',
+    dpManualBtn: '⌨ Manual',
+    dpConfirmBtn: 'OK',
+    deadlinePlaceholder: 'Select date',
+  }
+};
+
+function t(key, ...args) {
+  const v = T[lang][key];
+  return typeof v === 'function' ? v(...args) : (v ?? key);
+}
+
+// ── Date utilities ─────────────────────────────────────────────
+function getMonday(date) {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  const day = d.getDay();
+  d.setDate(d.getDate() - (day === 0 ? 6 : day - 1));
+  return d;
+}
+
+function localDateStr(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+function parseLocalDate(str) {
+  const [y, m, d] = str.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+
+function addDays(date, n) {
+  const d = new Date(date);
+  d.setDate(d.getDate() + n);
+  return d;
+}
+
+function todayDate() {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+function fmtShort(dateStr) {
+  const d = parseLocalDate(dateStr);
+  return `${d.getMonth() + 1}/${d.getDate()}`;
+}
+
+function fmtDateDisplay(dateStr) {
+  if (!dateStr) return '';
+  const d = parseLocalDate(dateStr);
+  if (lang === 'ja') {
+    return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;
+  } else {
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+  }
+}
+
+// ── Task logic ─────────────────────────────────────────────────
+function workDays(weight) {
+  return Math.max(1, settings[weight] || 1);
+}
+
+function taskStartDate(task) {
+  return addDays(parseLocalDate(task.deadline), -workDays(task.weight));
+}
+
+function inWorkPeriod(task, dateStr) {
+  const s = localDateStr(taskStartDate(task));
+  return dateStr >= s && dateStr <= task.deadline;
+}
+
+// ── Custom date picker ─────────────────────────────────────────
+function openDatePicker() {
+  const currentVal = document.getElementById('inputDeadline').value;
+  if (currentVal) {
+    dpMonth = parseLocalDate(currentVal);
+  } else {
+    dpMonth = new Date();
+  }
+  dpMonth.setDate(1);
+  document.getElementById('dpManualInputWrapper').classList.remove('active');
+  renderDatePicker();
+  document.getElementById('datePickerOverlay').classList.add('active');
+}
+
+function closeDatePicker() {
+  document.getElementById('datePickerOverlay').classList.remove('active');
+}
+
+function setDeadlineValue(dateStr) {
+  document.getElementById('inputDeadline').value = dateStr;
+  const btnText = document.getElementById('deadlineBtnText');
+  const btn = document.getElementById('deadlineDisplayBtn');
+  if (dateStr) {
+    btnText.textContent = fmtDateDisplay(dateStr);
+    btn.classList.add('has-value');
+  } else {
+    btnText.textContent = t('deadlinePlaceholder');
+    btn.classList.remove('has-value');
+  }
+}
+
+function renderDatePicker() {
+  const grid = document.getElementById('dpGrid');
+  grid.innerHTML = '';
+
+  const year = dpMonth.getFullYear();
+  const month = dpMonth.getMonth();
+  const todayStr = localDateStr(todayDate());
+  const selectedStr = document.getElementById('inputDeadline').value;
+
+  if (lang === 'ja') {
+    document.getElementById('dpMonthLabel').textContent = `${year}年${month + 1}月`;
+  } else {
+    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    document.getElementById('dpMonthLabel').textContent = `${months[month]} ${year}`;
+  }
+
+  const dayHeaders = t('days');
+  dayHeaders.forEach(d => {
+    const h = document.createElement('div');
+    h.className = 'dp-day-header';
+    h.textContent = d;
+    grid.appendChild(h);
+  });
+
+  // First day of month: what weekday (Mon=0...Sun=6)
+  const firstDay = new Date(year, month, 1);
+  let startOffset = firstDay.getDay() - 1; // Mon=0
+  if (startOffset < 0) startOffset = 6;
+
+  // Empty cells before month start
+  for (let i = 0; i < startOffset; i++) {
+    const empty = document.createElement('button');
+    empty.className = 'dp-day empty';
+    grid.appendChild(empty);
+  }
+
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  for (let d = 1; d <= daysInMonth; d++) {
+    const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const btn = document.createElement('button');
+    btn.className = 'dp-day';
+    if (ds === todayStr) btn.classList.add('today');
+    if (ds === selectedStr) btn.classList.add('selected');
+    btn.textContent = d;
+    btn.addEventListener('click', () => {
+      setDeadlineValue(ds);
+      closeDatePicker();
+    });
+    grid.appendChild(btn);
+  }
+}
+
+document.getElementById('deadlineDisplayBtn').addEventListener('click', () => {
+  openDatePicker();
+});
+
+document.getElementById('dpPrev').addEventListener('click', () => {
+  dpMonth.setMonth(dpMonth.getMonth() - 1);
+  renderDatePicker();
+});
+
+document.getElementById('dpNext').addEventListener('click', () => {
+  dpMonth.setMonth(dpMonth.getMonth() + 1);
+  renderDatePicker();
+});
+
+document.getElementById('dpTodayBtn').addEventListener('click', () => {
+  const td = localDateStr(todayDate());
+  setDeadlineValue(td);
+  closeDatePicker();
+});
+
+document.getElementById('dpManualBtn').addEventListener('click', () => {
+  const wrapper = document.getElementById('dpManualInputWrapper');
+  wrapper.classList.toggle('active');
+  if (wrapper.classList.contains('active')) {
+    const nativeInput = document.getElementById('dpManualNative');
+    nativeInput.value = document.getElementById('inputDeadline').value || '';
+    nativeInput.focus();
+  }
+});
+
+document.getElementById('dpManualConfirm').addEventListener('click', () => {
+  const val = document.getElementById('dpManualNative').value;
+  if (val) {
+    setDeadlineValue(val);
+    closeDatePicker();
+  }
+});
+
+document.getElementById('dpManualNative').addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    document.getElementById('dpManualConfirm').click();
+  }
+});
+
+document.getElementById('datePickerOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('datePickerOverlay')) {
+    closeDatePicker();
+  }
+});
+
+// ── applyLang ──────────────────────────────────────────────────
+function applyLang() {
+  document.documentElement.lang = lang;
+  const h1 = document.getElementById('appTitle');
+  if (lang === 'ja') {
+    h1.innerHTML = '<span class="title-ja">ざっくり</span><span class="title-en">TASK</span>';
+    document.title = 'ざっくりTASK';
+  } else {
+    h1.innerHTML = '<span class="title-en">ROUGH TASK</span>';
+    document.title = 'ROUGH TASK';
+  }
+  document.getElementById('langBtn').textContent = t('langBtn');
+  document.getElementById('formTitle').textContent = t('formTitle');
+  document.getElementById('lblTitle').innerHTML = `${t('lblTitle')} <span style="color:var(--danger)">*</span>`;
+  document.getElementById('lblDeadline').innerHTML = `${t('lblDeadline')} <span style="color:var(--danger)">*</span>`;
+  document.getElementById('lblWeight').textContent = t('lblWeight');
+  document.getElementById('lblMemo').textContent = t('lblMemo');
+  document.getElementById('addBtn').textContent = t('addBtn');
+  document.getElementById('listTitle').textContent = t('listTitle');
+  document.getElementById('settingsTitle').textContent = t('settingsTitle');
+  document.getElementById('lblDayLarge').textContent = t('lblDayLarge');
+  document.getElementById('lblDayMedium').textContent = t('lblDayMedium');
+  document.getElementById('lblDaySmall').textContent = t('lblDaySmall');
+  document.getElementById('lblNotifPerm').textContent = t('lblNotifPerm');
+  document.getElementById('notifPermBtn').textContent = t('notifPermBtn');
+  document.getElementById('saveSettings').textContent = t('saveSettings');
+  document.getElementById('deleteTaskBtn').textContent = t('deleteTaskBtn');
+  document.getElementById('optLarge').textContent = t('optLarge', settings.large);
+  document.getElementById('optMedium').textContent = t('optMedium', settings.medium);
+  document.getElementById('optSmall').textContent = t('optSmall', settings.small);
+  document.getElementById('btnCalMonth').textContent = t('calMonth');
+  document.getElementById('btnCalWeek').textContent = t('calWeek');
+  document.getElementById('dpTodayBtn').textContent = t('dpTodayBtn');
+  document.getElementById('dpManualBtn').textContent = t('dpManualBtn');
+  document.getElementById('dpManualConfirm').textContent = t('dpConfirmBtn');
+
+  // Update deadline display button placeholder / value
+  const existingDeadline = document.getElementById('inputDeadline').value;
+  setDeadlineValue(existingDeadline);
+
+  updateNotifStatus();
+}
+
+// ── Calendar rendering ─────────────────────────────────────────
+function renderCalendar() {
+  if (calendarMode === 'month') {
+    renderMonthCalendar();
+  } else {
+    renderWeekCalendar();
+  }
+}
+
+function renderMonthCalendar() {
+  const grid = document.getElementById('calendarGrid');
+  grid.innerHTML = '';
+  const todayStr = localDateStr(todayDate());
+  const year = currentMonthDate.getFullYear();
+  const month = currentMonthDate.getMonth();
+
+  // Label
+  if (lang === 'ja') {
+    document.getElementById('calPeriodLabel').textContent = `${year}年${month + 1}月`;
+  } else {
+    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    document.getElementById('calPeriodLabel').textContent = `${months[month]} ${year}`;
+  }
+
+  const days = t('days');
+  days.forEach(d => {
+    const h = document.createElement('div');
+    h.className = 'cal-header';
+    h.textContent = d;
+    grid.appendChild(h);
+  });
+
+  // First day of month offset (Mon=0)
+  const firstDay = new Date(year, month, 1);
+  let startOffset = firstDay.getDay() - 1;
+  if (startOffset < 0) startOffset = 6;
+
+  // Previous month filler
+  for (let i = 0; i < startOffset; i++) {
+    const prevDate = new Date(year, month, -startOffset + i + 1);
+    const cell = document.createElement('div');
+    cell.className = 'cal-day other-month';
+    const num = document.createElement('span');
+    num.className = 'cal-date';
+    num.textContent = prevDate.getDate();
+    cell.appendChild(num);
+    grid.appendChild(cell);
+  }
+
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  for (let d = 1; d <= daysInMonth; d++) {
+    const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const cell = document.createElement('div');
+    cell.className = 'cal-day' + (ds === todayStr ? ' today' : '');
+    cell.style.position = 'relative';
+
+    const num = document.createElement('span');
+    num.className = 'cal-date';
+    num.textContent = d;
+    cell.appendChild(num);
+
+    // Collect tasks: show deadline tags first, then work period bars
+    const deadlineTasks = tasks.filter(task => task.deadline === ds);
+    const workPeriodTasks = tasks.filter(task => {
+      const startS = localDateStr(taskStartDate(task));
+      return ds >= startS && ds < task.deadline; // work period only (not deadline day)
+    });
+
+    // Deadline tags (solid colored)
+    deadlineTasks.forEach(task => {
+      const tag = document.createElement('div');
+      tag.className = `cal-deadline-tag ${task.weight}`;
+      tag.textContent = task.title;
+      tag.title = task.title;
+      tag.addEventListener('click', () => openTaskDetail(task.id));
+      cell.appendChild(tag);
+    });
+
+    // Work period bars (subtle, stacked at bottom — one bar per task)
+    // We show them as small colored bars stacked at bottom
+    workPeriodTasks.forEach((task, idx) => {
+      const bar = document.createElement('div');
+      bar.className = `cal-work-bar ${task.weight}`;
+      bar.style.bottom = `${idx * 5}px`;
+      bar.style.height = '4px';
+      bar.title = task.title;
+      bar.style.cursor = 'pointer';
+      bar.addEventListener('click', () => openTaskDetail(task.id));
+      cell.appendChild(bar);
+    });
+
+    grid.appendChild(cell);
+  }
+
+  // Fill remaining cells
+  const totalCells = startOffset + daysInMonth;
+  const remainder = totalCells % 7;
+  if (remainder !== 0) {
+    const extra = 7 - remainder;
+    for (let i = 1; i <= extra; i++) {
+      const cell = document.createElement('div');
+      cell.className = 'cal-day other-month';
+      const num = document.createElement('span');
+      num.className = 'cal-date';
+      num.textContent = i;
+      cell.appendChild(num);
+      grid.appendChild(cell);
+    }
+  }
+}
+
+function renderWeekCalendar() {
+  const grid = document.getElementById('calendarGrid');
+  grid.innerHTML = '';
+  const todayStr = localDateStr(todayDate());
+  const start = new Date(currentWeekStart);
+  const end = addDays(start, 6);
+
+  const fmt = d => lang === 'ja'
+    ? `${d.getMonth() + 1}月${d.getDate()}日`
+    : `${d.getMonth() + 1}/${d.getDate()}`;
+  document.getElementById('calPeriodLabel').textContent = `${fmt(start)} – ${fmt(end)}`;
+
+  const days = t('days');
+  days.forEach(d => {
+    const h = document.createElement('div');
+    h.className = 'cal-header';
+    h.textContent = d;
+    grid.appendChild(h);
+  });
+
+  for (let i = 0; i < 7; i++) {
+    const day = addDays(start, i);
+    const ds = localDateStr(day);
+    const cell = document.createElement('div');
+    cell.className = 'cal-day' + (ds === todayStr ? ' today' : '');
+
+    const num = document.createElement('span');
+    num.className = 'cal-date';
+    num.textContent = day.getDate();
+    cell.appendChild(num);
+
+    tasks.forEach(task => {
+      if (!inWorkPeriod(task, ds)) return;
+      const isDeadline = ds === task.deadline;
+      const block = document.createElement('div');
+      block.className = `task-block ${task.weight}${isDeadline ? ' dl' : ''}`;
+
+      if (!isDeadline) {
+        // work period block: show small prefix
+        const startS = localDateStr(taskStartDate(task));
+        const isStart = ds === startS;
+        block.textContent = (isStart ? '▶ ' : '') + task.title;
+      } else {
+        block.textContent = '■ ' + task.title;
+      }
+
+      block.title = `${task.title}\n${t('deadlineLabel')}: ${task.deadline}`;
+      block.addEventListener('click', () => openTaskDetail(task.id));
+      cell.appendChild(block);
+    });
+
+    grid.appendChild(cell);
+  }
+}
+
+// ── Task list ──────────────────────────────────────────────────
+function renderTaskList() {
+  const list = document.getElementById('taskList');
+  if (tasks.length === 0) {
+    list.innerHTML = `<div class="empty">${t('emptyList')}</div>`;
+    return;
+  }
+  const sorted = [...tasks].sort((a, b) => a.deadline.localeCompare(b.deadline));
+  list.innerHTML = sorted.map(task => {
+    const startS = localDateStr(taskStartDate(task));
+    return `
+    <div class="task-item">
+      <div class="task-weight-badge ${task.weight}"></div>
+      <div class="task-info">
+        <div class="task-title">${esc(task.title)}</div>
+        <div class="task-meta">
+          <span class="chip ${task.weight}">${t(task.weight)}</span>
+          &nbsp;${t('startLabel')}: ${fmtShort(startS)}
+          &nbsp;→ ${t('deadlineLabel')}: ${fmtShort(task.deadline)}
+        </div>
+        ${task.memo ? `<div class="task-memo">${esc(task.memo)}</div>` : ''}
+      </div>
+      <button class="task-detail-btn" onclick="openTaskDetail('${task.id}')">${t('detailBtnLabel')}</button>
+    </div>`;
+  }).join('');
+}
+
+function esc(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function openTaskDetail(id) {
+  const task = tasks.find(t => t.id === id);
+  if (!task) return;
+  selectedTaskId = id;
+  const startS = localDateStr(taskStartDate(task));
+  document.getElementById('detailTitle').textContent = task.title;
+  document.getElementById('detailBody').innerHTML = `
+    <table class="detail-table">
+      <tr><td>${t('weightLabel')}</td><td><span class="chip ${task.weight}">${t(task.weight)}</span></td></tr>
+      <tr><td>${t('startLabel')}</td><td>${startS}</td></tr>
+      <tr><td>${t('deadlineLabel')}</td><td>${task.deadline}</td></tr>
+      <tr><td>${t('workDaysLabel')}</td><td>${workDays(task.weight)}</td></tr>
+      ${task.memo ? `<tr><td>${t('memoLabel')}</td><td style="white-space:pre-wrap">${esc(task.memo)}</td></tr>` : ''}
+    </table>`;
+  document.getElementById('taskDetailOverlay').classList.add('active');
+}
+
+// ── Notifications ──────────────────────────────────────────────
+function checkNotifications() {
+  const todayStr = localDateStr(todayDate());
+  const area = document.getElementById('notifArea');
+  const banners = [];
+
+  tasks.forEach(task => {
+    const startS    = localDateStr(taskStartDate(task));
+    const deadlineS = task.deadline;
+    const d2Date    = addDays(parseLocalDate(deadlineS), -2);
+    const d2S       = localDateStr(d2Date);
+    const showD2    = d2S > startS;
+
+    if (todayStr === startS)              banners.push({ type: 'start',  task });
+    if (showD2 && todayStr === d2S)       banners.push({ type: 'warn',   task });
+    if (todayStr === deadlineS)           banners.push({ type: 'urgent', task });
+  });
+
+  area.innerHTML = banners.map(({ type, task }) => {
+    const cls = type === 'start' ? 'notif-start' : type === 'warn' ? 'notif-warn' : 'notif-urgent';
+    const msg = type === 'start'  ? t('notifStart',  task.title)
+              : type === 'warn'   ? t('notifWarn',   task.title)
+              :                     t('notifUrgent', task.title);
+    return `<div class="notif-banner ${cls}">${esc(msg)}</div>`;
+  }).join('');
+
+  if ('Notification' in window && Notification.permission === 'granted') {
+    banners.forEach(({ type, task }) => {
+      const key = `notif_sent_${task.id}_${type}_${todayStr}`;
+      if (localStorage.getItem(key)) return;
+      const msg = type === 'start'  ? t('notifStart',  task.title)
+                : type === 'warn'   ? t('notifWarn',   task.title)
+                :                     t('notifUrgent', task.title);
+      try { new Notification(lang === 'ja' ? 'ざっくりTASK' : 'ROUGH TASK', { body: msg }); } catch(e) {}
+      localStorage.setItem(key, '1');
+    });
+  }
+}
+
+function updateNotifStatus() {
+  const el = document.getElementById('notifStatus');
+  if (!('Notification' in window)) { el.textContent = '非対応'; return; }
+  const p = Notification.permission;
+  el.textContent = p === 'granted' ? t('notifGranted')
+                 : p === 'denied'  ? t('notifDenied')
+                 : t('notifDefault');
+}
+
+// ── Persistence ────────────────────────────────────────────────
+function saveTasks() {
+  localStorage.setItem('tasks', JSON.stringify(tasks));
+  updateURLHash();
+  renderURLInfoCard();
+}
+
+function saveSettingsToStorage() {
+  localStorage.setItem('taskSettings', JSON.stringify(settings));
+}
+
+// ── URL info card ──────────────────────────────────────────────
+function renderURLInfoCard() {
+  const card = document.getElementById('urlInfoCard');
+  card.style.display = tasks.length === 0 ? 'none' : 'flex';
+  card.innerHTML = `
+    <div class="url-info-icon">🔗</div>
+    <div class="url-info-text">
+      <strong>${t('urlInfoTitle')}</strong>
+      <span>${t('urlInfoDesc')}</span>
+    </div>
+    <button class="url-copy-btn" id="inlineUrlCopyBtn">${t('copyUrlBtn')}</button>
+  `;
+  document.getElementById('inlineUrlCopyBtn').addEventListener('click', copyCurrentURL);
+}
+
+function copyCurrentURL() {
+  const url = location.href;
+  const doSuccess = () => {
+    const btn = document.getElementById('inlineUrlCopyBtn');
+    if (!btn) return;
+    btn.textContent = t('copiedFeedback');
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = t('copyUrlBtn'); btn.classList.remove('copied'); }, 2000);
+  };
+  navigator.clipboard.writeText(url).then(doSuccess).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = url;
+    ta.style.cssText = 'position:fixed;opacity:0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    doSuccess();
+  });
+}
+
+// ── Calendar mode toggles ──────────────────────────────────────
+document.getElementById('btnCalMonth').addEventListener('click', () => {
+  calendarMode = 'month';
+  document.getElementById('btnCalMonth').classList.add('active');
+  document.getElementById('btnCalWeek').classList.remove('active');
+  renderCalendar();
+});
+
+document.getElementById('btnCalWeek').addEventListener('click', () => {
+  calendarMode = 'week';
+  document.getElementById('btnCalWeek').classList.add('active');
+  document.getElementById('btnCalMonth').classList.remove('active');
+  renderCalendar();
+});
+
+document.getElementById('prevPeriod').addEventListener('click', () => {
+  if (calendarMode === 'month') {
+    currentMonthDate.setMonth(currentMonthDate.getMonth() - 1);
+  } else {
+    currentWeekStart = addDays(currentWeekStart, -7);
+  }
+  renderCalendar();
+});
+
+document.getElementById('nextPeriod').addEventListener('click', () => {
+  if (calendarMode === 'month') {
+    currentMonthDate.setMonth(currentMonthDate.getMonth() + 1);
+  } else {
+    currentWeekStart = addDays(currentWeekStart, 7);
+  }
+  renderCalendar();
+});
+
+// ── Form events ────────────────────────────────────────────────
+document.getElementById('addBtn').addEventListener('click', () => {
+  const title    = document.getElementById('inputTitle').value.trim();
+  const deadline = document.getElementById('inputDeadline').value;
+  const weight   = document.getElementById('inputWeight').value;
+  const memo     = document.getElementById('inputMemo').value.trim();
+
+  if (!title)    { alert(t('titleRequired'));    return; }
+  if (!deadline) { alert(t('deadlineRequired')); return; }
+
+  tasks.push({
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2),
+    title, deadline, weight, memo,
+    created: new Date().toISOString()
+  });
+  saveTasks();
+
+  document.getElementById('inputTitle').value = '';
+  setDeadlineValue('');
+  document.getElementById('inputMemo').value = '';
+
+  renderAll();
+});
+
+document.getElementById('inputTitle').addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); document.getElementById('deadlineDisplayBtn').click(); }
+});
+
+// ── Header buttons ─────────────────────────────────────────────
+document.getElementById('copyUrlBtn').addEventListener('click', () => {
+  const btn = document.getElementById('copyUrlBtn');
+  navigator.clipboard.writeText(location.href).then(() => {
+    btn.textContent = '✓';
+    setTimeout(() => { btn.textContent = '🔗'; }, 2000);
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = location.href;
+    ta.style.cssText = 'position:fixed;opacity:0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    btn.textContent = '✓';
+    setTimeout(() => { btn.textContent = '🔗'; }, 2000);
+  });
+});
+
+document.getElementById('langBtn').addEventListener('click', () => {
+  lang = lang === 'ja' ? 'en' : 'ja';
+  localStorage.setItem('lang', lang);
+  applyLang();
+  renderAll();
+});
+
+// ── Settings modal ─────────────────────────────────────────────
+document.getElementById('settingsBtn').addEventListener('click', () => {
+  document.getElementById('settingLarge').value  = settings.large;
+  document.getElementById('settingMedium').value = settings.medium;
+  document.getElementById('settingSmall').value  = settings.small;
+  updateNotifStatus();
+  document.getElementById('settingsOverlay').classList.add('active');
+});
+
+document.getElementById('closeSettings').addEventListener('click', () =>
+  document.getElementById('settingsOverlay').classList.remove('active'));
+
+document.getElementById('settingsOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('settingsOverlay'))
+    document.getElementById('settingsOverlay').classList.remove('active');
+});
+
+document.getElementById('saveSettings').addEventListener('click', () => {
+  settings.large  = Math.max(1, parseInt(document.getElementById('settingLarge').value)  || 7);
+  settings.medium = Math.max(1, parseInt(document.getElementById('settingMedium').value) || 3);
+  settings.small  = Math.max(1, parseInt(document.getElementById('settingSmall').value)  || 1);
+  saveSettingsToStorage();
+  document.getElementById('settingsOverlay').classList.remove('active');
+  applyLang();
+  renderAll();
+});
+
+document.getElementById('notifPermBtn').addEventListener('click', () => {
+  if (!('Notification' in window)) return;
+  Notification.requestPermission().then(() => {
+    updateNotifStatus();
+    checkNotifications();
+  });
+});
+
+// ── Task detail modal ──────────────────────────────────────────
+document.getElementById('closeDetail').addEventListener('click', () =>
+  document.getElementById('taskDetailOverlay').classList.remove('active'));
+
+document.getElementById('taskDetailOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('taskDetailOverlay'))
+    document.getElementById('taskDetailOverlay').classList.remove('active');
+});
+
+document.getElementById('deleteTaskBtn').addEventListener('click', () => {
+  if (!selectedTaskId) return;
+  tasks = tasks.filter(t => t.id !== selectedTaskId);
+  saveTasks();
+  document.getElementById('taskDetailOverlay').classList.remove('active');
+  renderAll();
+});
+
+// ── Init ───────────────────────────────────────────────────────
+function renderAll() {
+  renderCalendar();
+  renderTaskList();
+  renderURLInfoCard();
+  checkNotifications();
+}
+
+loadInitialTasks();
+applyLang();
+renderAll();
+</script>
+</body>
+</html>
