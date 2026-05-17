@@ -146,23 +146,6 @@ button {
 }
 .btn-danger:hover { background: var(--danger-bg); border-color: var(--danger); }
 
-.btn-cal-toggle {
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text-muted);
-  padding: 6px 14px;
-  min-height: 34px;
-  font-size: 0.85rem;
-  font-family: 'Josefin Sans', sans-serif;
-  letter-spacing: 0.08em;
-}
-.btn-cal-toggle.active {
-  background: var(--primary);
-  color: #fff;
-  border-color: var(--primary);
-}
-.btn-cal-toggle:hover:not(.active) { background: var(--bg2); }
-
 /* ── Layout ──────────────────────────────────────────────────── */
 main {
   max-width: 1100px;
@@ -176,6 +159,10 @@ main {
   grid-template-columns: 1fr 1fr;
   gap: 16px;
   align-items: start;
+}
+
+@media (min-width: 768px) {
+  .desktop-layout { grid-template-columns: 62fr 38fr; }
 }
 
 .desktop-left {
@@ -195,7 +182,7 @@ main {
     grid-template-columns: 1fr;
   }
   .desktop-right {
-    order: -1;
+    order: 2;
   }
 }
 
@@ -221,7 +208,7 @@ main {
   margin-bottom: 18px;
 }
 
-/* ── Form ────────────────────────────────────────────────────── */
+/* ── Form (modal) ────────────────────────────────────────────── */
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -270,8 +257,66 @@ textarea { resize: vertical; min-height: 56px; }
   margin-top: 12px;
 }
 
-/* ── Custom date picker button ───────────────────────────────── */
-#deadlineDisplayBtn {
+/* ── Calendar header ─────────────────────────────────────────── */
+.calendar-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.cal-nav-group { display: flex; align-items: center; gap: 4px; }
+
+.period-label {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--text);
+  min-width: 130px;
+  text-align: center;
+}
+
+.today-btn {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  padding: 8px 14px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  min-height: 44px;
+}
+.today-btn:hover { background: var(--bg2); border-color: var(--border-focus); color: var(--text); }
+
+/* ── FAB "+" button ──────────────────────────────────────────── */
+.fab-add {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 300;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #F7F4EF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(94,138,132,0.35);
+  transition: background 0.18s, transform 0.15s;
+  padding: 0;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+.fab-add:hover { background: var(--primary-hover); transform: scale(1.08); }
+
+/* ── Date display button (in modal) ──────────────────────────── */
+.date-display-btn {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -289,17 +334,13 @@ textarea { resize: vertical; min-height: 56px; }
   transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
   cursor: pointer;
 }
-#deadlineDisplayBtn:hover {
+.date-display-btn:hover {
   border-color: var(--border-focus);
   background: var(--surface);
 }
-#deadlineDisplayBtn .dp-icon { font-size: 1rem; flex-shrink: 0; }
-#deadlineDisplayBtn .dp-text { flex: 1; }
-#deadlineDisplayBtn.has-value .dp-text { color: var(--text); }
-#deadlineDisplayBtn:not(.has-value) .dp-text { color: var(--text-light); }
-
-/* Hidden native date input */
-#inputDeadline { display: none; }
+.date-display-btn .dp-icon { font-size: 1rem; flex-shrink: 0; }
+.date-display-btn.has-value { color: var(--text); }
+.date-display-btn:not(.has-value) { color: var(--text-light); }
 
 /* ── Date picker overlay ─────────────────────────────────────── */
 #datePickerOverlay {
@@ -318,8 +359,8 @@ textarea { resize: vertical; min-height: 56px; }
 .dp-modal {
   background: var(--surface);
   border-radius: var(--radius);
-  padding: 20px;
-  width: min(340px, 100%);
+  padding: 20px 18px 18px;
+  width: min(390px, 96vw);
   box-shadow: 0 12px 40px rgba(46,43,39,0.18);
   border: 1px solid var(--border);
 }
@@ -352,32 +393,32 @@ textarea { resize: vertical; min-height: 56px; }
 
 .dp-grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 3px;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 2px;
 }
 
 .dp-day-header {
   font-family: 'Josefin Sans', sans-serif;
   text-align: center;
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   font-weight: 600;
   color: var(--text-light);
-  letter-spacing: 0.1em;
-  padding: 4px 0 6px;
+  letter-spacing: 0.06em;
+  padding: 3px 0 6px;
 }
 
 .dp-day {
-  aspect-ratio: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-sm);
   font-family: 'Nunito', sans-serif;
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   cursor: pointer;
   border: 1px solid transparent;
   transition: background 0.14s, border-color 0.14s;
-  min-height: 36px;
+  height: 40px;
+  width: 100%;
   padding: 0;
 }
 .dp-day:hover { background: var(--bg2); border-color: var(--border); }
@@ -461,39 +502,7 @@ textarea { resize: vertical; min-height: 56px; }
 }
 #dpManualConfirm:hover { background: var(--primary-hover); }
 
-/* ── Calendar ────────────────────────────────────────────────── */
-.calendar-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
-  gap: 8px;
-}
-
-.calendar-nav-center {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex: 1;
-  justify-content: center;
-}
-
-.calendar-nav h2 {
-  font-family: 'Josefin Sans', sans-serif;
-  font-size: 0.92rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.cal-toggle-group {
-  display: flex;
-  gap: 4px;
-  margin-left: 8px;
-}
-
+/* ── Calendar grid ───────────────────────────────────────────── */
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -512,24 +521,31 @@ textarea { resize: vertical; min-height: 56px; }
 }
 
 /* Month view day cells */
-.cal-day {
-  min-height: 78px;
+.month-cell {
+  min-height: 110px;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 5px;
   background: var(--surface2);
-  transition: border-color 0.15s;
+  transition: border-color 0.15s, background 0.14s;
   position: relative;
   overflow: hidden;
+  cursor: pointer;
 }
 
-.cal-day.today {
+.month-cell:hover { background: var(--primary-light); }
+
+.month-cell.today {
   border-color: var(--primary);
   background: var(--primary-light);
 }
 
-.cal-day.other-month {
+.month-cell.other-month {
   opacity: 0.45;
+}
+
+@media (max-width: 767px) {
+  .month-cell { min-height: 64px; }
 }
 
 .cal-date {
@@ -542,7 +558,7 @@ textarea { resize: vertical; min-height: 56px; }
   line-height: 1.3;
 }
 
-.cal-day.today .cal-date {
+.month-cell.today .cal-date {
   color: var(--primary);
   font-weight: 600;
 }
@@ -579,32 +595,6 @@ textarea { resize: vertical; min-height: 56px; }
 .cal-deadline-tag.large  { background: var(--large-color);  color: #fff; }
 .cal-deadline-tag.medium { background: var(--medium-color); color: #fff; }
 .cal-deadline-tag.small  { background: var(--small-color);  color: #fff; }
-
-/* Week view blocks */
-.task-block {
-  font-family: 'Nunito', 'Hiragino Sans', sans-serif;
-  font-size: 0.72rem;
-  font-weight: 600;
-  padding: 3px 6px;
-  border-radius: 4px;
-  margin-bottom: 2px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  cursor: pointer;
-  line-height: 1.6;
-  transition: filter 0.15s;
-  letter-spacing: 0.01em;
-}
-.task-block:hover { filter: brightness(0.94); }
-
-.task-block.large  { background: var(--large-bg);  border-left: 3px solid var(--large-color);  color: var(--large-text); }
-.task-block.medium { background: var(--medium-bg); border-left: 3px solid var(--medium-color); color: var(--medium-text); }
-.task-block.small  { background: var(--small-bg);  border-left: 3px solid var(--small-color);  color: var(--small-text); }
-
-.task-block.large.dl  { background: var(--large-color);  color: #fff; border-left: none; font-weight: 700; }
-.task-block.medium.dl { background: var(--medium-color); color: #fff; border-left: none; font-weight: 700; }
-.task-block.small.dl  { background: var(--small-color);  color: #fff; border-left: none; font-weight: 700; }
 
 /* ── Task list ───────────────────────────────────────────────── */
 .task-list { display: flex; flex-direction: column; gap: 8px; }
@@ -717,6 +707,8 @@ textarea { resize: vertical; min-height: 56px; }
   max-height: 90vh;
   overflow-y: auto;
 }
+
+.task-input-modal { width: min(480px, 96vw); }
 
 .modal-header {
   display: flex;
@@ -847,8 +839,6 @@ textarea { resize: vertical; min-height: 56px; }
 
 /* ── Responsive ──────────────────────────────────────────────── */
 @media (max-width: 600px) {
-  .cal-day { min-height: 60px; }
-  .task-block { font-size: 0.62rem; }
   .card { padding: 14px; }
   .url-info-card { flex-wrap: wrap; }
   .url-copy-btn { width: 100%; text-align: center; }
@@ -875,59 +865,21 @@ textarea { resize: vertical; min-height: 56px; }
   </div>
 
   <div class="desktop-layout">
-    <!-- Left column: form + calendar -->
+    <!-- Left column: calendar -->
     <div class="desktop-left">
-
-      <!-- Add task form -->
       <div class="card">
-        <div class="card-title" id="formTitle">タスクを追加</div>
-        <div class="form-grid">
-          <div class="form-group full">
-            <label id="lblTitle">タイトル <span style="color:var(--danger)">*</span></label>
-            <input type="text" id="inputTitle" autocomplete="off">
+        <!-- Calendar header -->
+        <div class="calendar-header">
+          <button class="today-btn" id="todayBtn">今日</button>
+          <div class="cal-nav-group">
+            <button class="btn-secondary" id="prevPeriod" style="padding:6px 14px;min-height:36px;font-size:1.1rem;">‹</button>
+            <span class="period-label" id="calPeriodLabel"></span>
+            <button class="btn-secondary" id="nextPeriod" style="padding:6px 14px;min-height:36px;font-size:1.1rem;">›</button>
           </div>
-          <div class="form-group">
-            <label id="lblDeadline">締め切り日 <span style="color:var(--danger)">*</span></label>
-            <button type="button" id="deadlineDisplayBtn">
-              <span class="dp-icon">📅</span>
-              <span class="dp-text" id="deadlineBtnText"></span>
-            </button>
-            <input type="date" id="inputDeadline">
-          </div>
-          <div class="form-group">
-            <label id="lblWeight">重さ</label>
-            <select id="inputWeight">
-              <option value="large" id="optLarge">大（7日）</option>
-              <option value="medium" id="optMedium" selected>中（3日）</option>
-              <option value="small" id="optSmall">小（1日）</option>
-            </select>
-          </div>
-          <div class="form-group full">
-            <label id="lblMemo">メモ（任意）</label>
-            <textarea id="inputMemo" rows="2"></textarea>
-          </div>
-        </div>
-        <div class="form-actions">
-          <button class="btn-primary" id="addBtn">＋ 追加</button>
-        </div>
-      </div>
-
-      <!-- Calendar -->
-      <div class="card">
-        <div class="calendar-nav">
-          <button class="btn-secondary" id="prevPeriod" style="padding:6px 14px;min-height:36px;font-size:1.1rem;">‹</button>
-          <div class="calendar-nav-center">
-            <h2 id="calPeriodLabel"></h2>
-            <div class="cal-toggle-group">
-              <button class="btn-cal-toggle active" id="btnCalMonth" data-mode="month">月</button>
-              <button class="btn-cal-toggle" id="btnCalWeek" data-mode="week">週</button>
-            </div>
-          </div>
-          <button class="btn-secondary" id="nextPeriod" style="padding:6px 14px;min-height:36px;font-size:1.1rem;">›</button>
+          <button class="fab-add" id="fabAddBtn" title="タスクを追加">＋</button>
         </div>
         <div class="calendar-grid" id="calendarGrid"></div>
       </div>
-
     </div><!-- end desktop-left -->
 
     <!-- Right column: task list -->
@@ -940,6 +892,45 @@ textarea { resize: vertical; min-height: 56px; }
 
   </div><!-- end desktop-layout -->
 </main>
+
+<!-- Task input modal -->
+<div class="overlay" id="taskInputOverlay">
+  <div class="modal task-input-modal">
+    <div class="modal-header">
+      <span class="modal-title" id="tiModalTitle">タスクを追加</span>
+      <button class="modal-close" id="closeTIModal">✕</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group full">
+        <label id="tiLblTitle">タイトル <span style="color:var(--danger)">*</span></label>
+        <input type="text" id="tiInputTitle" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label id="tiLblDeadline">締め切り日 <span style="color:var(--danger)">*</span></label>
+        <button type="button" id="tiDeadlineBtn" class="date-display-btn">
+          <span class="dp-icon">📅</span>
+          <span id="tiDeadlineBtnText"></span>
+        </button>
+        <input type="date" id="tiInputDeadline" style="display:none">
+      </div>
+      <div class="form-group">
+        <label id="tiLblWeight">重さ</label>
+        <select id="tiInputWeight">
+          <option value="large" id="tiOptLarge">大（7日）</option>
+          <option value="medium" id="tiOptMedium" selected>中（3日）</option>
+          <option value="small" id="tiOptSmall">小（1日）</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label id="tiLblMemo">メモ（任意）</label>
+        <textarea id="tiInputMemo" rows="2"></textarea>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-primary" id="tiAddBtn">＋ 追加</button>
+    </div>
+  </div>
+</div>
 
 <!-- Date picker overlay -->
 <div class="overlay" id="datePickerOverlay">
@@ -1012,13 +1003,12 @@ textarea { resize: vertical; min-height: 56px; }
 let lang = localStorage.getItem('lang') || 'ja';
 let settings = JSON.parse(localStorage.getItem('taskSettings') || '{"large":7,"medium":3,"small":1}');
 let tasks = [];
-let calendarMode = 'month'; // 'month' or 'week'
 let currentMonthDate = new Date();
-let currentWeekStart = getMonday(new Date());
 let selectedTaskId = null;
 
 // Date picker state
 let dpMonth = new Date();
+let _dpCallback = null; // callback-based date picker
 
 // ── URL encode / decode ────────────────────────────────────────
 function encodeTasks(arr) {
@@ -1029,16 +1019,52 @@ function decodeTasks(str) {
   try { const arr = JSON.parse(decodeURIComponent(atob(str))); return Array.isArray(arr) ? arr : null; } catch(e) { return null; }
 }
 
+function genPersonalId() {
+  return 'p_' + Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 8);
+}
+
 function updateURLHash() {
+  if (tasks.length === 0) {
+    // タスクが空になったら個人IDに戻す
+    const pid = localStorage.getItem('personalId');
+    if (pid) history.replaceState(null, '', '#' + pid);
+    return;
+  }
   const encoded = encodeTasks(tasks);
-  history.replaceState(null, '', encoded ? '#' + encoded : location.pathname + location.search);
+  if (encoded) history.replaceState(null, '', '#' + encoded);
 }
 
 function loadInitialTasks() {
   const hash = location.hash.slice(1);
-  if (hash) { const d = decodeTasks(hash); if (d) { tasks = d; localStorage.setItem('tasks', JSON.stringify(tasks)); return; } }
+
+  // p_ で始まるハッシュは個人ID（タスクなし状態の識別子）
+  if (hash && !hash.startsWith('p_')) {
+    const decoded = decodeTasks(hash);
+    if (decoded !== null) {
+      tasks = decoded;
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+      return;
+    }
+  }
+
+  // localStorageからタスクを復元
   tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
-  updateURLHash();
+
+  if (tasks.length > 0) {
+    // タスクがあればURLに反映
+    updateURLHash();
+  } else {
+    // タスクなし → 個人IDを確保
+    if (hash && hash.startsWith('p_')) {
+      // 既存の個人IDページにアクセスした → 保存
+      localStorage.setItem('personalId', hash);
+    } else if (!hash) {
+      // 初回アクセス：新しい個人IDを生成してURLに付与
+      const pid = localStorage.getItem('personalId') || genPersonalId();
+      localStorage.setItem('personalId', pid);
+      history.replaceState(null, '', '#' + pid);
+    }
+  }
 }
 
 // ── i18n ───────────────────────────────────────────────────────
@@ -1084,12 +1110,11 @@ const T = {
     copyUrlBtn: 'URLをコピー',
     copiedFeedback: 'コピーしました ✓',
     detailBtnLabel: '詳細',
-    calWeek: '週',
-    calMonth: '月',
     dpTodayBtn: '今日',
     dpManualBtn: '⌨ 手動入力',
     dpConfirmBtn: '確定',
     deadlinePlaceholder: '日付を選択',
+    todayBtn: '今日',
   },
   en: {
     formTitle: 'Add Task',
@@ -1132,12 +1157,11 @@ const T = {
     copyUrlBtn: 'Copy URL',
     copiedFeedback: 'Copied ✓',
     detailBtnLabel: 'Details',
-    calWeek: 'Week',
-    calMonth: 'Month',
     dpTodayBtn: 'Today',
     dpManualBtn: '⌨ Manual',
     dpConfirmBtn: 'OK',
     deadlinePlaceholder: 'Select date',
+    todayBtn: 'Today',
   }
 };
 
@@ -1147,14 +1171,6 @@ function t(key, ...args) {
 }
 
 // ── Date utilities ─────────────────────────────────────────────
-function getMonday(date) {
-  const d = new Date(date);
-  d.setHours(0, 0, 0, 0);
-  const day = d.getDay();
-  d.setDate(d.getDate() - (day === 0 ? 6 : day - 1));
-  return d;
-}
-
 function localDateStr(date) {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, '0');
@@ -1209,15 +1225,15 @@ function inWorkPeriod(task, dateStr) {
   return dateStr >= s && dateStr <= task.deadline;
 }
 
-// ── Custom date picker ─────────────────────────────────────────
-function openDatePicker() {
-  const currentVal = document.getElementById('inputDeadline').value;
-  if (currentVal) {
-    dpMonth = parseLocalDate(currentVal);
+// ── Callback-based date picker ─────────────────────────────────
+function openDatePicker(callback, prefillDateStr) {
+  _dpCallback = callback;
+  if (prefillDateStr) {
+    const d = parseLocalDate(prefillDateStr);
+    dpMonth = new Date(d.getFullYear(), d.getMonth(), 1);
   } else {
-    dpMonth = new Date();
+    dpMonth = new Date(todayDate().getFullYear(), todayDate().getMonth(), 1);
   }
-  dpMonth.setDate(1);
   document.getElementById('dpManualInputWrapper').classList.remove('active');
   renderDatePicker();
   document.getElementById('datePickerOverlay').classList.add('active');
@@ -1227,19 +1243,6 @@ function closeDatePicker() {
   document.getElementById('datePickerOverlay').classList.remove('active');
 }
 
-function setDeadlineValue(dateStr) {
-  document.getElementById('inputDeadline').value = dateStr;
-  const btnText = document.getElementById('deadlineBtnText');
-  const btn = document.getElementById('deadlineDisplayBtn');
-  if (dateStr) {
-    btnText.textContent = fmtDateDisplay(dateStr);
-    btn.classList.add('has-value');
-  } else {
-    btnText.textContent = t('deadlinePlaceholder');
-    btn.classList.remove('has-value');
-  }
-}
-
 function renderDatePicker() {
   const grid = document.getElementById('dpGrid');
   grid.innerHTML = '';
@@ -1247,7 +1250,6 @@ function renderDatePicker() {
   const year = dpMonth.getFullYear();
   const month = dpMonth.getMonth();
   const todayStr = localDateStr(todayDate());
-  const selectedStr = document.getElementById('inputDeadline').value;
 
   if (lang === 'ja') {
     document.getElementById('dpMonthLabel').textContent = `${year}年${month + 1}月`;
@@ -1264,12 +1266,10 @@ function renderDatePicker() {
     grid.appendChild(h);
   });
 
-  // First day of month: what weekday (Mon=0...Sun=6)
   const firstDay = new Date(year, month, 1);
-  let startOffset = firstDay.getDay() - 1; // Mon=0
+  let startOffset = firstDay.getDay() - 1;
   if (startOffset < 0) startOffset = 6;
 
-  // Empty cells before month start
   for (let i = 0; i < startOffset; i++) {
     const empty = document.createElement('button');
     empty.className = 'dp-day empty';
@@ -1282,19 +1282,14 @@ function renderDatePicker() {
     const btn = document.createElement('button');
     btn.className = 'dp-day';
     if (ds === todayStr) btn.classList.add('today');
-    if (ds === selectedStr) btn.classList.add('selected');
     btn.textContent = d;
     btn.addEventListener('click', () => {
-      setDeadlineValue(ds);
+      if (_dpCallback) { _dpCallback(ds); _dpCallback = null; }
       closeDatePicker();
     });
     grid.appendChild(btn);
   }
 }
-
-document.getElementById('deadlineDisplayBtn').addEventListener('click', () => {
-  openDatePicker();
-});
 
 document.getElementById('dpPrev').addEventListener('click', () => {
   dpMonth.setMonth(dpMonth.getMonth() - 1);
@@ -1308,7 +1303,7 @@ document.getElementById('dpNext').addEventListener('click', () => {
 
 document.getElementById('dpTodayBtn').addEventListener('click', () => {
   const td = localDateStr(todayDate());
-  setDeadlineValue(td);
+  if (_dpCallback) { _dpCallback(td); _dpCallback = null; }
   closeDatePicker();
 });
 
@@ -1316,16 +1311,15 @@ document.getElementById('dpManualBtn').addEventListener('click', () => {
   const wrapper = document.getElementById('dpManualInputWrapper');
   wrapper.classList.toggle('active');
   if (wrapper.classList.contains('active')) {
-    const nativeInput = document.getElementById('dpManualNative');
-    nativeInput.value = document.getElementById('inputDeadline').value || '';
-    nativeInput.focus();
+    document.getElementById('dpManualNative').value = '';
+    document.getElementById('dpManualNative').focus();
   }
 });
 
 document.getElementById('dpManualConfirm').addEventListener('click', () => {
   const val = document.getElementById('dpManualNative').value;
   if (val) {
-    setDeadlineValue(val);
+    if (_dpCallback) { _dpCallback(val); _dpCallback = null; }
     closeDatePicker();
   }
 });
@@ -1339,7 +1333,74 @@ document.getElementById('dpManualNative').addEventListener('keydown', e => {
 
 document.getElementById('datePickerOverlay').addEventListener('click', e => {
   if (e.target === document.getElementById('datePickerOverlay')) {
+    _dpCallback = null;
     closeDatePicker();
+  }
+});
+
+// ── Task input modal ───────────────────────────────────────────
+function openTaskInputModal(prefillDateStr) {
+  document.getElementById('tiInputTitle').value = '';
+  document.getElementById('tiInputMemo').value = '';
+  document.getElementById('tiInputWeight').value = 'medium';
+  tiSetDeadline(prefillDateStr || '');
+  document.getElementById('taskInputOverlay').classList.add('active');
+  setTimeout(() => document.getElementById('tiInputTitle').focus(), 100);
+}
+
+function tiSetDeadline(dateStr) {
+  document.getElementById('tiInputDeadline').value = dateStr;
+  const btnText = document.getElementById('tiDeadlineBtnText');
+  const btn = document.getElementById('tiDeadlineBtn');
+  if (dateStr) {
+    btnText.textContent = fmtDateDisplay(dateStr);
+    btn.classList.add('has-value');
+  } else {
+    btnText.textContent = t('deadlinePlaceholder');
+    btn.classList.remove('has-value');
+  }
+}
+
+document.getElementById('closeTIModal').addEventListener('click', () => {
+  document.getElementById('taskInputOverlay').classList.remove('active');
+});
+
+document.getElementById('taskInputOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('taskInputOverlay'))
+    document.getElementById('taskInputOverlay').classList.remove('active');
+});
+
+document.getElementById('tiDeadlineBtn').addEventListener('click', () => {
+  const current = document.getElementById('tiInputDeadline').value;
+  openDatePicker(ds => { tiSetDeadline(ds); soundDatePick(); }, current || null);
+});
+
+document.getElementById('tiAddBtn').addEventListener('click', () => {
+  const title    = document.getElementById('tiInputTitle').value.trim();
+  const deadline = document.getElementById('tiInputDeadline').value;
+  const weight   = document.getElementById('tiInputWeight').value;
+  const memo     = document.getElementById('tiInputMemo').value.trim();
+  if (!title)    { alert(t('titleRequired'));    return; }
+  if (!deadline) { alert(t('deadlineRequired')); return; }
+  tasks.push({
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2),
+    title, deadline, weight, memo,
+    created: new Date().toISOString()
+  });
+  saveTasks();
+  soundAdd();
+  document.getElementById('taskInputOverlay').classList.remove('active');
+  renderAll();
+});
+
+document.getElementById('tiInputTitle').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.isComposing) {
+    e.preventDefault();
+    if (document.getElementById('tiInputDeadline').value) {
+      document.getElementById('tiAddBtn').click();
+    } else {
+      document.getElementById('tiDeadlineBtn').click();
+    }
   }
 });
 
@@ -1355,12 +1416,6 @@ function applyLang() {
     document.title = 'ROUGH TASK';
   }
   document.getElementById('langBtn').textContent = t('langBtn');
-  document.getElementById('formTitle').textContent = t('formTitle');
-  document.getElementById('lblTitle').innerHTML = `${t('lblTitle')} <span style="color:var(--danger)">*</span>`;
-  document.getElementById('lblDeadline').innerHTML = `${t('lblDeadline')} <span style="color:var(--danger)">*</span>`;
-  document.getElementById('lblWeight').textContent = t('lblWeight');
-  document.getElementById('lblMemo').textContent = t('lblMemo');
-  document.getElementById('addBtn').textContent = t('addBtn');
   document.getElementById('listTitle').textContent = t('listTitle');
   document.getElementById('settingsTitle').textContent = t('settingsTitle');
   document.getElementById('lblDayLarge').textContent = t('lblDayLarge');
@@ -1370,29 +1425,30 @@ function applyLang() {
   document.getElementById('notifPermBtn').textContent = t('notifPermBtn');
   document.getElementById('saveSettings').textContent = t('saveSettings');
   document.getElementById('deleteTaskBtn').textContent = t('deleteTaskBtn');
-  document.getElementById('optLarge').textContent = t('optLarge', settings.large);
-  document.getElementById('optMedium').textContent = t('optMedium', settings.medium);
-  document.getElementById('optSmall').textContent = t('optSmall', settings.small);
-  document.getElementById('btnCalMonth').textContent = t('calMonth');
-  document.getElementById('btnCalWeek').textContent = t('calWeek');
   document.getElementById('dpTodayBtn').textContent = t('dpTodayBtn');
   document.getElementById('dpManualBtn').textContent = t('dpManualBtn');
   document.getElementById('dpManualConfirm').textContent = t('dpConfirmBtn');
+  document.getElementById('todayBtn').textContent = t('todayBtn');
 
-  // Update deadline display button placeholder / value
-  const existingDeadline = document.getElementById('inputDeadline').value;
-  setDeadlineValue(existingDeadline);
+  // Task input modal
+  document.getElementById('tiModalTitle').textContent = t('formTitle');
+  document.getElementById('tiLblTitle').innerHTML = t('lblTitle') + ' <span style="color:var(--danger)">*</span>';
+  document.getElementById('tiLblDeadline').innerHTML = t('lblDeadline') + ' <span style="color:var(--danger)">*</span>';
+  document.getElementById('tiLblWeight').textContent = t('lblWeight');
+  document.getElementById('tiLblMemo').textContent = t('lblMemo');
+  document.getElementById('tiAddBtn').textContent = t('addBtn');
+  document.getElementById('tiOptLarge').textContent = t('optLarge', settings.large);
+  document.getElementById('tiOptMedium').textContent = t('optMedium', settings.medium);
+  document.getElementById('tiOptSmall').textContent = t('optSmall', settings.small);
+  // Update deadline placeholder in modal
+  tiSetDeadline(document.getElementById('tiInputDeadline').value || '');
 
   updateNotifStatus();
 }
 
 // ── Calendar rendering ─────────────────────────────────────────
 function renderCalendar() {
-  if (calendarMode === 'month') {
-    renderMonthCalendar();
-  } else {
-    renderWeekCalendar();
-  }
+  renderMonthCalendar();
 }
 
 function renderMonthCalendar() {
@@ -1427,7 +1483,7 @@ function renderMonthCalendar() {
   for (let i = 0; i < startOffset; i++) {
     const prevDate = new Date(year, month, -startOffset + i + 1);
     const cell = document.createElement('div');
-    cell.className = 'cal-day other-month';
+    cell.className = 'month-cell other-month';
     const num = document.createElement('span');
     num.className = 'cal-date';
     num.textContent = prevDate.getDate();
@@ -1439,33 +1495,32 @@ function renderMonthCalendar() {
   for (let d = 1; d <= daysInMonth; d++) {
     const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const cell = document.createElement('div');
-    cell.className = 'cal-day' + (ds === todayStr ? ' today' : '');
-    cell.style.position = 'relative';
+    cell.className = 'month-cell' + (ds === todayStr ? ' today' : '');
 
     const num = document.createElement('span');
     num.className = 'cal-date';
     num.textContent = d;
     cell.appendChild(num);
 
-    // Collect tasks: show deadline tags first, then work period bars
-    const deadlineTasks = tasks.filter(task => task.deadline === ds);
-    const workPeriodTasks = tasks.filter(task => {
-      const startS = localDateStr(taskStartDate(task));
-      return ds >= startS && ds < task.deadline; // work period only (not deadline day)
-    });
-
     // Deadline tags (solid colored)
+    const deadlineTasks = tasks.filter(task => task.deadline === ds);
     deadlineTasks.forEach(task => {
       const tag = document.createElement('div');
       tag.className = `cal-deadline-tag ${task.weight}`;
       tag.textContent = task.title;
       tag.title = task.title;
-      tag.addEventListener('click', () => openTaskDetail(task.id));
+      tag.addEventListener('click', e => {
+        e.stopPropagation();
+        openTaskDetail(task.id);
+      });
       cell.appendChild(tag);
     });
 
-    // Work period bars (subtle, stacked at bottom — one bar per task)
-    // We show them as small colored bars stacked at bottom
+    // Work period bars (stacked at bottom)
+    const workPeriodTasks = tasks.filter(task => {
+      const startS = localDateStr(taskStartDate(task));
+      return ds >= startS && ds < task.deadline;
+    });
     workPeriodTasks.forEach((task, idx) => {
       const bar = document.createElement('div');
       bar.className = `cal-work-bar ${task.weight}`;
@@ -1473,8 +1528,16 @@ function renderMonthCalendar() {
       bar.style.height = '4px';
       bar.title = task.title;
       bar.style.cursor = 'pointer';
-      bar.addEventListener('click', () => openTaskDetail(task.id));
+      bar.addEventListener('click', e => {
+        e.stopPropagation();
+        openTaskDetail(task.id);
+      });
       cell.appendChild(bar);
+    });
+
+    // Clicking a day cell opens task input modal with date pre-filled
+    cell.addEventListener('click', () => {
+      openTaskInputModal(ds);
     });
 
     grid.appendChild(cell);
@@ -1487,68 +1550,13 @@ function renderMonthCalendar() {
     const extra = 7 - remainder;
     for (let i = 1; i <= extra; i++) {
       const cell = document.createElement('div');
-      cell.className = 'cal-day other-month';
+      cell.className = 'month-cell other-month';
       const num = document.createElement('span');
       num.className = 'cal-date';
       num.textContent = i;
       cell.appendChild(num);
       grid.appendChild(cell);
     }
-  }
-}
-
-function renderWeekCalendar() {
-  const grid = document.getElementById('calendarGrid');
-  grid.innerHTML = '';
-  const todayStr = localDateStr(todayDate());
-  const start = new Date(currentWeekStart);
-  const end = addDays(start, 6);
-
-  const fmt = d => lang === 'ja'
-    ? `${d.getMonth() + 1}月${d.getDate()}日`
-    : `${d.getMonth() + 1}/${d.getDate()}`;
-  document.getElementById('calPeriodLabel').textContent = `${fmt(start)} – ${fmt(end)}`;
-
-  const days = t('days');
-  days.forEach(d => {
-    const h = document.createElement('div');
-    h.className = 'cal-header';
-    h.textContent = d;
-    grid.appendChild(h);
-  });
-
-  for (let i = 0; i < 7; i++) {
-    const day = addDays(start, i);
-    const ds = localDateStr(day);
-    const cell = document.createElement('div');
-    cell.className = 'cal-day' + (ds === todayStr ? ' today' : '');
-
-    const num = document.createElement('span');
-    num.className = 'cal-date';
-    num.textContent = day.getDate();
-    cell.appendChild(num);
-
-    tasks.forEach(task => {
-      if (!inWorkPeriod(task, ds)) return;
-      const isDeadline = ds === task.deadline;
-      const block = document.createElement('div');
-      block.className = `task-block ${task.weight}${isDeadline ? ' dl' : ''}`;
-
-      if (!isDeadline) {
-        // work period block: show small prefix
-        const startS = localDateStr(taskStartDate(task));
-        const isStart = ds === startS;
-        block.textContent = (isStart ? '▶ ' : '') + task.title;
-      } else {
-        block.textContent = '■ ' + task.title;
-      }
-
-      block.title = `${task.title}\n${t('deadlineLabel')}: ${task.deadline}`;
-      block.addEventListener('click', () => openTaskDetail(task.id));
-      cell.appendChild(block);
-    });
-
-    grid.appendChild(cell);
   }
 }
 
@@ -1584,7 +1592,7 @@ function esc(s) {
 }
 
 function openTaskDetail(id) {
-  const task = tasks.find(t => t.id === id);
+  const task = tasks.find(tk => tk.id === id);
   if (!task) return;
   selectedTaskId = id;
   const startS = localDateStr(taskStartDate(task));
@@ -1695,66 +1703,63 @@ function copyCurrentURL() {
   });
 }
 
-// ── Calendar mode toggles ──────────────────────────────────────
-document.getElementById('btnCalMonth').addEventListener('click', () => {
-  calendarMode = 'month';
-  document.getElementById('btnCalMonth').classList.add('active');
-  document.getElementById('btnCalWeek').classList.remove('active');
+// ── Calendar navigation ────────────────────────────────────────
+document.getElementById('todayBtn').addEventListener('click', () => {
+  currentMonthDate = new Date();
   renderCalendar();
-});
-
-document.getElementById('btnCalWeek').addEventListener('click', () => {
-  calendarMode = 'week';
-  document.getElementById('btnCalWeek').classList.add('active');
-  document.getElementById('btnCalMonth').classList.remove('active');
-  renderCalendar();
+  soundTap();
 });
 
 document.getElementById('prevPeriod').addEventListener('click', () => {
-  if (calendarMode === 'month') {
-    currentMonthDate.setMonth(currentMonthDate.getMonth() - 1);
-  } else {
-    currentWeekStart = addDays(currentWeekStart, -7);
-  }
+  currentMonthDate.setMonth(currentMonthDate.getMonth() - 1);
   renderCalendar();
 });
 
 document.getElementById('nextPeriod').addEventListener('click', () => {
-  if (calendarMode === 'month') {
-    currentMonthDate.setMonth(currentMonthDate.getMonth() + 1);
-  } else {
-    currentWeekStart = addDays(currentWeekStart, 7);
-  }
+  currentMonthDate.setMonth(currentMonthDate.getMonth() + 1);
   renderCalendar();
 });
 
-// ── Form events ────────────────────────────────────────────────
-document.getElementById('addBtn').addEventListener('click', () => {
-  const title    = document.getElementById('inputTitle').value.trim();
-  const deadline = document.getElementById('inputDeadline').value;
-  const weight   = document.getElementById('inputWeight').value;
-  const memo     = document.getElementById('inputMemo').value.trim();
-
-  if (!title)    { alert(t('titleRequired'));    return; }
-  if (!deadline) { alert(t('deadlineRequired')); return; }
-
-  tasks.push({
-    id: Date.now().toString(36) + Math.random().toString(36).slice(2),
-    title, deadline, weight, memo,
-    created: new Date().toISOString()
-  });
-  saveTasks();
-
-  document.getElementById('inputTitle').value = '';
-  setDeadlineValue('');
-  document.getElementById('inputMemo').value = '';
-
-  renderAll();
+document.getElementById('fabAddBtn').addEventListener('click', () => {
+  openTaskInputModal(localDateStr(todayDate()));
 });
 
-document.getElementById('inputTitle').addEventListener('keydown', e => {
-  if (e.key === 'Enter') { e.preventDefault(); document.getElementById('deadlineDisplayBtn').click(); }
-});
+// ── Sound effects (Web Audio API) ─────────────────────────────
+let _audioCtx = null;
+function _ctx() {
+  if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return _audioCtx;
+}
+function _tone(freq, startSec, dur, vol = 0.18, type = 'sine') {
+  const ctx = _ctx();
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.connect(gain); gain.connect(ctx.destination);
+  osc.type = type;
+  osc.frequency.value = freq;
+  gain.gain.setValueAtTime(0, ctx.currentTime + startSec);
+  gain.gain.linearRampToValueAtTime(vol, ctx.currentTime + startSec + 0.01);
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + startSec + dur);
+  osc.start(ctx.currentTime + startSec);
+  osc.stop(ctx.currentTime + startSec + dur + 0.01);
+}
+// Task added: bright ascending chime (C5→E5→G5→C6)
+function soundAdd() {
+  try { _tone(523, 0,    0.22, 0.16); _tone(659, 0.09, 0.22, 0.14);
+        _tone(784, 0.18, 0.28, 0.12); _tone(1047,0.27, 0.35, 0.10); } catch(e){}
+}
+// Delete: soft descending two-note
+function soundDelete() {
+  try { _tone(440, 0, 0.18, 0.12); _tone(330, 0.1, 0.22, 0.09); } catch(e){}
+}
+// Date selected: gentle two-note click
+function soundDatePick() {
+  try { _tone(660, 0, 0.12, 0.10); _tone(880, 0.08, 0.16, 0.08); } catch(e){}
+}
+// Generic button tap: soft single pop
+function soundTap() {
+  try { _tone(740, 0, 0.10, 0.08); } catch(e){}
+}
 
 // ── Header buttons ─────────────────────────────────────────────
 document.getElementById('copyUrlBtn').addEventListener('click', () => {
@@ -1828,11 +1833,22 @@ document.getElementById('taskDetailOverlay').addEventListener('click', e => {
 
 document.getElementById('deleteTaskBtn').addEventListener('click', () => {
   if (!selectedTaskId) return;
-  tasks = tasks.filter(t => t.id !== selectedTaskId);
+  tasks = tasks.filter(tk => tk.id !== selectedTaskId);
   saveTasks();
+  soundDelete();
   document.getElementById('taskDetailOverlay').classList.remove('active');
   renderAll();
 });
+
+// ── Global tap sound (all buttons except those with own sounds) ─
+document.addEventListener('click', e => {
+  const btn = e.target.closest('button');
+  if (!btn) return;
+  const id = btn.id;
+  if (id === 'tiAddBtn' || id === 'deleteTaskBtn') return;
+  if (btn.classList.contains('dp-day')) return;
+  soundTap();
+}, true);
 
 // ── Init ───────────────────────────────────────────────────────
 function renderAll() {
