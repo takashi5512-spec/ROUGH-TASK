@@ -1376,8 +1376,8 @@ function startRealtimeListener() {
   if (!path) return;
   _fbDb.ref(path).on('value', snap => {
     const data = snap.val();
-    if (data && Array.isArray(data)) {
-      tasks = data;
+    if (data === null || Array.isArray(data)) {
+      tasks = data || [];
       localStorage.setItem('tasks', JSON.stringify(tasks));
       renderAll();
     }
@@ -1393,8 +1393,8 @@ async function loadFromFirebase() {
     setSyncStatus('syncing');
     const snap = await _fbDb.ref(path).once('value');
     const data = snap.val();
-    if (data && Array.isArray(data)) {
-      tasks = data;
+    if (data === null || Array.isArray(data)) {
+      tasks = data || [];
       localStorage.setItem('tasks', JSON.stringify(tasks));
       setSyncStatus('ok');
       return true;
